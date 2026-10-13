@@ -85,8 +85,9 @@
       flex-direction: column;
       height: 100vh;
       width: 100vw;
-      padding: 10px 16px 8px;
+      padding: 4px 6px;
       position: relative;
+      overflow: hidden;
     }
 
     /* Header Nav */
@@ -94,39 +95,39 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 48px;
+      height: 34px;
       flex-shrink: 0;
       padding: 0 8px;
       background: var(--surface-glass);
       backdrop-filter: blur(12px);
       border: 1px solid var(--surface-border);
-      border-radius: 14px;
-      margin-bottom: 8px;
+      border-radius: 10px;
+      margin-bottom: 3px;
       z-index: 10;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
     }
 
     .brand-logo {
-      width: 28px;
-      height: 28px;
+      width: 22px;
+      height: 22px;
       background: linear-gradient(135deg, #6366f1, #a855f7);
-      border-radius: 8px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 15px;
+      font-size: 12px;
       color: white;
-      box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
     }
 
     .brand-title {
-      font-size: 16px;
+      font-size: 13px;
       font-weight: 700;
       letter-spacing: -0.3px;
       background: linear-gradient(90deg, #ffffff, #cbd5e1);
@@ -135,13 +136,13 @@
     }
 
     .brand-badge {
-      font-size: 10px;
+      font-size: 9px;
       background: rgba(99, 102, 241, 0.2);
       color: #818cf8;
       border: 1px solid rgba(99, 102, 241, 0.4);
-      padding: 2px 7px;
-      border-radius: 20px;
-      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 12px;
+      font-weight: 700;
       letter-spacing: 0.5px;
       text-transform: uppercase;
     }
@@ -149,7 +150,7 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .btn {
@@ -160,12 +161,12 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 4px;
       font-family: inherit;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
-      border-radius: 9px;
-      padding: 6px 12px;
+      border-radius: 7px;
+      padding: 4px 8px;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -176,12 +177,11 @@
     .btn-primary {
       background: linear-gradient(135deg, #4f46e5, #7c3aed);
       color: white;
-      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+      box-shadow: 0 2px 10px rgba(79, 70, 229, 0.35);
       border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .btn-primary:hover {
-      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
       filter: brightness(1.1);
     }
 
@@ -199,10 +199,10 @@
       background: rgba(255, 255, 255, 0.07);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: var(--text-main);
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
-      border-radius: 8px;
-      padding: 5px 8px;
+      border-radius: 6px;
+      padding: 3px 6px;
       cursor: pointer;
       outline: none;
     }
@@ -211,33 +211,33 @@
       color: #fff;
     }
 
-    /* Main Board (Landscape Layout) */
+    /* Main Board (Landscape Layout - strictly no scroll) */
     .board-wrapper {
       flex: 1;
       display: flex;
       position: relative;
       background: rgba(15, 23, 42, 0.6);
       border: 1px solid var(--surface-border);
-      border-radius: 16px;
+      border-radius: 12px;
       overflow: hidden;
       backdrop-filter: blur(12px);
-      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4);
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4);
     }
 
     /* Left Y-Axis Scale */
     .y-axis {
-      width: 72px;
+      width: 32px;
       flex-shrink: 0;
       position: relative;
       border-right: 1px solid var(--axis-line);
-      background: rgba(10, 15, 30, 0.6);
+      background: rgba(10, 15, 30, 0.7);
       z-index: 5;
     }
 
     .y-axis-scroll {
       position: absolute;
-      top: 36px;
-      bottom: 84px; /* leaves room for bottom controls align */
+      top: 26px;
+      bottom: 64px;
       left: 0;
       right: 0;
     }
@@ -248,63 +248,50 @@
       transform: translateY(50%);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 3px;
       pointer-events: none;
     }
 
     .y-tick-label {
       font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 600;
+      font-size: 8px;
+      font-weight: 700;
       color: var(--text-muted);
       text-align: right;
     }
 
     .y-tick-label.major {
       color: #e2e8f0;
-      font-weight: 700;
-      font-size: 11px;
+      font-size: 8.5px;
     }
 
     .y-tick-line {
-      width: 8px;
+      width: 5px;
       height: 1px;
       background: var(--axis-line);
     }
 
     .y-tick-line.major {
-      width: 14px;
+      width: 8px;
       background: #818cf8;
       height: 1.5px;
     }
 
-    /* Graph Canvas / Columns Scroll Area */
+    /* Graph Canvas - Strictly No Scroll */
     .graph-viewport {
       flex: 1;
       position: relative;
-      overflow-x: auto;
-      overflow-y: hidden;
+      overflow: hidden;
       display: flex;
-      scroll-behavior: smooth;
-    }
-
-    /* Custom Scrollbar for columns */
-    .graph-viewport::-webkit-scrollbar {
-      height: 6px;
-    }
-    .graph-viewport::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.2);
-    }
-    .graph-viewport::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.2);
-      border-radius: 3px;
+      width: calc(100% - 32px);
+      height: 100%;
     }
 
     /* Background Horizontal Grid Lines */
     .grid-canvas {
       position: absolute;
-      top: 36px;
-      bottom: 84px;
+      top: 26px;
+      bottom: 64px;
       left: 0;
       right: 0;
       pointer-events: none;
@@ -331,32 +318,35 @@
       box-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
     }
 
-    /* Students Track Container */
+    /* 25 Students Track Container (Strictly fits without scroll) */
     .students-container {
       display: flex;
       align-items: stretch;
-      padding: 0 20px;
-      min-width: 100%;
+      padding: 0 2px;
+      width: 100%;
       height: 100%;
       position: relative;
       z-index: 2;
+      overflow: hidden;
+      justify-content: space-between;
     }
 
-    /* Single Student Column */
+    /* Single Student Column (Proportional auto-shrink for 25 columns) */
     .student-col {
-      flex: 0 0 130px;
-      max-width: 145px;
-      margin: 0 10px;
+      flex: 1 1 0;
+      min-width: 0;
+      margin: 0 1px;
       display: flex;
       flex-direction: column;
       position: relative;
+      height: 100%;
     }
 
     /* Vertical Graph Bar Area */
     .bar-track-area {
       position: absolute;
-      top: 36px;
-      bottom: 84px;
+      top: 26px;
+      bottom: 64px;
       left: 0;
       right: 0;
       display: flex;
@@ -369,20 +359,20 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      width: 4px;
-      background: rgba(255, 255, 255, 0.07);
-      border-radius: 2px;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 1px;
     }
 
     /* The Active Line that rises and lowers */
     .vertical-line-bar {
       position: absolute;
       bottom: 0;
-      width: 5px;
-      border-radius: 3px 3px 0 0;
+      width: 3px;
+      border-radius: 2px 2px 0 0;
       background: linear-gradient(to top, var(--student-color-dim), var(--student-color));
-      box-shadow: 0 0 12px var(--student-color-glow);
-      transition: height 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 0 8px var(--student-color-glow);
+      transition: height 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     /* Circle Avatar at the very top of the line */
@@ -391,92 +381,67 @@
       top: 0;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 58px;
-      height: 58px;
+      width: clamp(22px, 2.7vw, 32px);
+      height: clamp(22px, 2.7vw, 32px);
       border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #ffffff, var(--student-color));
-      border: 3px solid #ffffff;
-      box-shadow: 0 6px 20px var(--student-color-glow), inset 0 2px 4px rgba(255,255,255,0.8);
+      border: 1.5px solid #ffffff;
+      box-shadow: 0 3px 10px var(--student-color-glow);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       z-index: 10;
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .top-circle-badge:hover {
-      transform: translate(-50%, -50%) scale(1.08);
-      box-shadow: 0 10px 25px var(--student-color-glow);
+      transform: translate(-50%, -50%) scale(1.15);
+      z-index: 20;
     }
 
     .circle-name {
       color: #0f172a;
       font-weight: 800;
-      font-size: 11px;
-      line-height: 1.1;
+      font-size: clamp(6.5px, 0.85vw, 8.5px);
+      line-height: 1;
       text-align: center;
-      max-width: 48px;
+      max-width: 92%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      text-transform: capitalize;
-    }
-
-    .circle-score-pill {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 800;
-      color: #0f172a;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 1px 5px;
-      border-radius: 4px;
-      margin-top: 2px;
-      line-height: 1.1;
-      letter-spacing: -0.2px;
-    }
-
-    .circle-avatar-icon {
-      font-size: 12px;
-      margin-bottom: 1px;
     }
 
     /* Floating Score Tag above the circle */
     .score-tag-float {
       position: absolute;
       bottom: 100%;
-      margin-bottom: 6px;
-      background: rgba(15, 23, 42, 0.9);
+      margin-bottom: 3px;
+      background: rgba(15, 23, 42, 0.95);
       border: 1px solid var(--student-color);
       color: #ffffff;
       font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 7px;
-      border-radius: 8px;
+      font-size: clamp(7px, 0.8vw, 8.5px);
+      font-weight: 800;
+      padding: 1px 3px;
+      border-radius: 4px;
       white-space: nowrap;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
       pointer-events: none;
-      animation: floatPop 0.3s ease;
-    }
-
-    @keyframes floatPop {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
     }
 
     /* Bottom Control Pod for Student */
     .student-control-pod {
       position: absolute;
-      bottom: 6px;
+      bottom: 2px;
       left: 0;
       right: 0;
-      height: 72px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 6px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 5px;
+      padding: 2px 1px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -487,49 +452,50 @@
     .pod-top-info {
       width: 100%;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 2px;
+      gap: 1px;
     }
 
     .pod-name {
-      font-size: 11px;
+      font-size: clamp(7px, 0.85vw, 8.5px);
       font-weight: 700;
       color: var(--text-main);
-      max-width: 65px;
+      max-width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      line-height: 1;
     }
 
     .pod-val-fraction {
       font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
+      font-size: clamp(6.5px, 0.8vw, 8px);
+      font-weight: 800;
       color: var(--student-color);
-      background: rgba(0,0,0,0.3);
-      padding: 1px 5px;
-      border-radius: 5px;
+      line-height: 1;
+      white-space: nowrap;
     }
 
-    /* Plus / Minus Stepper */
+    /* Plus / Minus Stepper (Stacked for easy finger tap in 28-32px column) */
     .stepper-buttons {
       width: 100%;
       display: flex;
-      align-items: center;
-      gap: 6px;
+      flex-direction: column;
+      gap: 2px;
     }
 
     .step-btn {
-      flex: 1;
-      height: 32px;
+      width: 100%;
+      height: 15px;
       border: none;
-      border-radius: 8px;
+      border-radius: 3px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      font-weight: 800;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
       cursor: pointer;
       color: #fff;
       transition: all 0.15s;
@@ -540,22 +506,22 @@
     }
 
     .step-btn-minus {
-      background: rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.25);
       border: 1px solid rgba(239, 68, 68, 0.4);
       color: #fca5a5;
     }
     .step-btn-minus:hover {
-      background: rgba(239, 68, 68, 0.35);
+      background: rgba(239, 68, 68, 0.45);
       color: #fff;
     }
 
     .step-btn-plus {
-      background: rgba(34, 197, 94, 0.2);
+      background: rgba(34, 197, 94, 0.25);
       border: 1px solid rgba(34, 197, 94, 0.4);
       color: #86efac;
     }
     .step-btn-plus:hover {
-      background: rgba(34, 197, 94, 0.35);
+      background: rgba(34, 197, 94, 0.45);
       color: #fff;
     }
 
@@ -712,7 +678,7 @@
         <div class="brand-logo">📈</div>
         <div>
           <span class="brand-title">Student Progress</span>
-          <span class="brand-badge">Landscape</span>
+          <span class="brand-badge">25 Lines</span>
         </div>
       </div>
 
@@ -889,26 +855,53 @@
     }
 
     /* =========================================================================
-       COLOR PALETTES
+       COLOR PALETTES (25 distinct vibrant spectrum colors for 25 lines)
        ========================================================================= */
-    const PALETTE = [
-      { color: '#38bdf8', dim: '#0284c7', glow: 'rgba(56, 189, 248, 0.45)', avatar: '🚀' },
-      { color: '#ec4899', dim: '#be185d', glow: 'rgba(236, 72, 153, 0.45)', avatar: '⭐' },
-      { color: '#10b981', dim: '#047857', glow: 'rgba(16, 185, 129, 0.45)', avatar: '🍀' },
-      { color: '#f59e0b', dim: '#b45309', glow: 'rgba(245, 158, 11, 0.45)', avatar: '🦁' },
-      { color: '#8b5cf6', dim: '#6d28d9', glow: 'rgba(139, 92, 246, 0.45)', avatar: '🦄' },
-      { color: '#06b6d4', dim: '#0e7490', glow: 'rgba(6, 182, 212, 0.45)', avatar: '🐬' },
-      { color: '#f43f5e', dim: '#be123c', glow: 'rgba(244, 63, 94, 0.45)', avatar: '🎯' },
-      { color: '#84cc16', dim: '#4d7c0f', glow: 'rgba(132, 204, 22, 0.45)', avatar: '🥑' }
-    ];
+    const PALETTE = Array.from({ length: 25 }, (_, i) => {
+      const hue = Math.round((i * 360) / 25);
+      return {
+        color: `hsl(${hue}, 92%, 62%)`,
+        dim: `hsl(${hue}, 80%, 38%)`,
+        glow: `hsla(${hue}, 90%, 60%, 0.45)`,
+        avatar: (i + 1).toString()
+      };
+    });
 
     let selectedColorIndex = 0;
 
     /* =========================================================================
-       DATA STORE
+       DATA STORE (Preloaded with 25 students for single screen view)
        ========================================================================= */
-    const STORAGE_KEY = 'student_progress_data_v2';
+    const STORAGE_KEY = 'student_progress_data_v3';
     let students = [];
+
+    const DEFAULT_25_STUDENTS = [
+      { name: 'Alex', quarters: 1 },    // 1/4
+      { name: 'Ben', quarters: 2 },     // 1/2
+      { name: 'Chloe', quarters: 3 },   // 3/4
+      { name: 'Dan', quarters: 4 },     // 1
+      { name: 'Emma', quarters: 5 },    // 1 1/4
+      { name: 'Finn', quarters: 6 },    // 1 1/2
+      { name: 'Grace', quarters: 7 },   // 1 3/4
+      { name: 'Henry', quarters: 8 },   // 2
+      { name: 'Isla', quarters: 9 },    // 2 1/4
+      { name: 'Jack', quarters: 10 },   // 2 1/2
+      { name: 'Kate', quarters: 11 },   // 2 3/4
+      { name: 'Leo', quarters: 12 },    // 3
+      { name: 'Maya', quarters: 13 },   // 3 1/4
+      { name: 'Noah', quarters: 14 },   // 3 1/2
+      { name: 'Olivia', quarters: 15 }, // 3 3/4
+      { name: 'Paul', quarters: 16 },   // 4
+      { name: 'Quinn', quarters: 17 },  // 4 1/4
+      { name: 'Ryan', quarters: 18 },   // 4 1/2
+      { name: 'Sam', quarters: 19 },    // 4 3/4
+      { name: 'Tara', quarters: 20 },   // 5
+      { name: 'Uma', quarters: 24 },    // 6
+      { name: 'Victor', quarters: 32 }, // 8
+      { name: 'Will', quarters: 44 },   // 11
+      { name: 'Xena', quarters: 60 },   // 15
+      { name: 'Zoe', quarters: 84 }     // 21 (Goal)
+    ];
 
     function saveToStorage() {
       try {
@@ -939,21 +932,17 @@
       } catch (e) {
         console.error(e);
       }
-      // Initial students showing requested sequence: 1/4, 1/2, 3/4, 1, 1 1/4, 1 1/2, 1 3/4, 2
-      students = [
-        { id: '1', name: 'Ava', quarters: 1, colorIndex: 0 },     // 1/4
-        { id: '2', name: 'Leo', quarters: 2, colorIndex: 1 },     // 1/2
-        { id: '3', name: 'Noah', quarters: 3, colorIndex: 2 },    // 3/4
-        { id: '4', name: 'Emma', quarters: 4, colorIndex: 3 },    // 1
-        { id: '5', name: 'Liam', quarters: 5, colorIndex: 4 },    // 1 1/4
-        { id: '6', name: 'Olivia', quarters: 6, colorIndex: 5 },  // 1 1/2
-        { id: '7', name: 'Lucas', quarters: 7, colorIndex: 6 },   // 1 3/4
-        { id: '8', name: 'Sophia', quarters: 8, colorIndex: 7 }   // 2
-      ];
+      // Populate exactly 25 students
+      students = DEFAULT_25_STUDENTS.map((item, idx) => ({
+        id: (idx + 1).toString(),
+        name: item.name,
+        quarters: item.quarters,
+        colorIndex: idx % PALETTE.length
+      }));
     }
 
     /* =========================================================================
-       RENDERING Y-AXIS & GRID
+       RENDERING Y-AXIS & GRID (Compact 32px scale)
        ========================================================================= */
     function renderYAxis() {
       const axisContainer = document.getElementById('y-axis-ticks');
@@ -963,41 +952,31 @@
 
       totalQuarterSteps = maxDigits * 4;
 
-      // Determine step frequency so labels are clean without overcrowding
-      // If maxDigits <= 10, show every 1/2 or 1
-      // If maxDigits > 10, show every whole number and marks for quarters
       for (let q = 0; q <= totalQuarterSteps; q++) {
         const isWhole = (q % 4 === 0);
-        const isHalf = (q % 2 === 0);
+        const wholeVal = q / 4;
         const percent = (q / totalQuarterSteps) * 100;
 
-        // Create horizontal grid lines for whole numbers and halves
-        if (isWhole || (maxDigits <= 10 && isHalf)) {
+        if (isWhole) {
+          const isMilestone = (wholeVal % (maxDigits > 15 ? 3 : 2) === 0) || wholeVal === maxDigits || wholeVal === 0;
+          
           const gridLine = document.createElement('div');
-          gridLine.className = 'grid-line' + (isWhole ? ' major' : '') + (q === totalQuarterSteps ? ' target-top' : '');
+          gridLine.className = 'grid-line' + (isMilestone ? ' major' : '') + (q === totalQuarterSteps ? ' target-top' : '');
           gridLine.style.bottom = `${percent}%`;
           gridContainer.appendChild(gridLine);
-        }
 
-        // Ticks on left axis:
-        // Always show whole numbers. For smaller scales show 1/2 and 1/4.
-        const shouldShowLabel = isWhole || (maxDigits <= 8 && isHalf) || (maxDigits <= 4);
-        const shouldShowTick = isWhole || isHalf || (maxDigits <= 15);
-
-        if (shouldShowTick) {
           const tick = document.createElement('div');
           tick.className = 'y-tick';
           tick.style.bottom = `${percent}%`;
 
           let labelHtml = '';
-          if (shouldShowLabel) {
-            const fracText = formatFraction(q);
-            labelHtml = `<span class="y-tick-label ${isWhole ? 'major' : ''}">${fracText}</span>`;
+          if (isMilestone) {
+            labelHtml = `<span class="y-tick-label ${wholeVal % 5 === 0 ? 'major' : ''}">${wholeVal}</span>`;
           }
 
           tick.innerHTML = `
             ${labelHtml}
-            <div class="y-tick-line ${isWhole ? 'major' : ''}"></div>
+            <div class="y-tick-line ${isMilestone ? 'major' : ''}"></div>
           `;
           axisContainer.appendChild(tick);
         }
@@ -1041,11 +1020,10 @@
             <!-- Rising Vertical Line Bar -->
             <div class="vertical-line-bar" style="height: ${heightPercent}%;">
               
-              <!-- Floating Top Circle with Student Name -->
+              <!-- Floating Top Circle with Student Name inside -->
               <div class="top-circle-badge" onclick="editStudent('${student.id}')" title="Click to edit ${student.name}">
                 <div class="score-tag-float">${fractionFormatted}</div>
                 <div class="circle-name">${student.name}</div>
-                <div class="circle-score-pill">${fractionFormatted}</div>
               </div>
 
             </div>
@@ -1058,16 +1036,8 @@
               <span class="pod-val-fraction" title="${fractionVerbose}">${fractionFormatted}</span>
             </div>
 
-            <!-- + / - Buttons for quarter adjustments -->
+            <!-- Vertical Stacked Stepper: + on top, - on bottom for clean touch -->
             <div class="stepper-buttons">
-              <button class="step-btn step-btn-minus" 
-                onpointerdown="startHoldAdjust('${student.id}', -1, event)" 
-                onpointerup="stopHoldAdjust(event)" 
-                onpointerleave="stopHoldAdjust(event)" 
-                onpointercancel="stopHoldAdjust(event)" 
-                title="Decrease (-1/4)">
-                −
-              </button>
               <button class="step-btn step-btn-plus" 
                 onpointerdown="startHoldAdjust('${student.id}', 1, event)" 
                 onpointerup="stopHoldAdjust(event)" 
@@ -1075,6 +1045,14 @@
                 onpointercancel="stopHoldAdjust(event)" 
                 title="Increase (+1/4)">
                 +
+              </button>
+              <button class="step-btn step-btn-minus" 
+                onpointerdown="startHoldAdjust('${student.id}', -1, event)" 
+                onpointerup="stopHoldAdjust(event)" 
+                onpointerleave="stopHoldAdjust(event)" 
+                onpointercancel="stopHoldAdjust(event)" 
+                title="Decrease (-1/4)">
+                −
               </button>
             </div>
           </div>
@@ -1121,17 +1099,12 @@
     }
 
     function loadSampleData() {
-      students = [
-        { id: '1', name: 'Ava', quarters: 1, colorIndex: 0 },     // 1/4
-        { id: '2', name: 'Leo', quarters: 2, colorIndex: 1 },     // 1/2
-        { id: '3', name: 'Noah', quarters: 3, colorIndex: 2 },    // 3/4
-        { id: '4', name: 'Emma', quarters: 4, colorIndex: 3 },    // 1
-        { id: '5', name: 'Liam', quarters: 5, colorIndex: 4 },    // 1 1/4
-        { id: '6', name: 'Olivia', quarters: 6, colorIndex: 5 },  // 1 1/2
-        { id: '7', name: 'Lucas', quarters: 7, colorIndex: 6 },   // 1 3/4
-        { id: '8', name: 'Sophia', quarters: 8, colorIndex: 7 },  // 2
-        { id: '9', name: 'Maya', quarters: 84, colorIndex: 2 }    // 21 (Goal reached!)
-      ];
+      students = DEFAULT_25_STUDENTS.map((item, idx) => ({
+        id: (idx + 1).toString(),
+        name: item.name,
+        quarters: item.quarters,
+        colorIndex: idx % PALETTE.length
+      }));
       saveToStorage();
       renderStudents();
       triggerConfetti();
