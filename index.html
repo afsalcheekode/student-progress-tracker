@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Student Progress Tracker - Landscape Line Graph</title>
+  <meta name="description" content="Interactive student progress tracker with vertical line bars, fractional quarter steps up to 21, and circular name tags. Optimized for horizontal landscape mobile view.">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 50%, #090d16 100%);
+      --surface-glass: rgba(255, 255, 255, 0.06);
+      --surface-border: rgba(255, 255, 255, 0.12);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-glow: rgba(99, 102, 241, 0.25);
+      --axis-line: rgba(255, 255, 255, 0.15);
+      --axis-minor: rgba(255, 255, 255, 0.05);
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: #090d16;
+      background-image: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      width: 100vw;
+      overflow-x: hidden;
+      overflow-y: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Landscape Enforcement Toast / Modal */
+    #orientation-prompt {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 15, 29, 0.96);
+      backdrop-filter: blur(16px);
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      color: #fff;
+    }
+
+    @media (orientation: portrait) and (max-width: 900px) {
+      #orientation-prompt {
+        display: flex;
+      }
+    }
+
+    .phone-rotate-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 24px;
+      animation: rotatePhone 2.2s infinite ease-in-out;
+    }
+
+    @keyframes rotatePhone {
+      0%, 20% { transform: rotate(0deg); }
+      50%, 75% { transform: rotate(90deg); }
+      90%, 100% { transform: rotate(0deg); }
+    }
+
+    /* App Shell */
+    #app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      padding: 10px 16px 8px;
+      position: relative;
+    }
+
+    /* Header Nav */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 48px;
+      flex-shrink: 0;
+      padding: 0 8px;
+      background: var(--surface-glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--surface-border);
+      border-radius: 14px;
+      margin-bottom: 8px;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 15px;
+      color: white;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      background: linear-gradient(90deg, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-badge {
+      font-size: 10px;
+      background: rgba(99, 102, 241, 0.2);
+      color: #818cf8;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      padding: 2px 7px;
+      border-radius: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 9px;
+      padding: 6px 12px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+      filter: brightness(1.1);
+    }
+
+    .btn-glass {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .btn-glass:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .max-badge-select {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 5px 8px;
+      cursor: pointer;
+      outline: none;
+    }
+    .max-badge-select option {
+      background: #0f172a;
+      color: #fff;
+    }
+
+    /* Main Board (Landscape Layout) */
+    .board-wrapper {
+      flex: 1;
+      display: flex;
+      position: relative;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--surface-border);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Left Y-Axis Scale */
+    .y-axis {
+      width: 72px;
+      flex-shrink: 0;
+      position: relative;
+      border-right: 1px solid var(--axis-line);
+      background: rgba(10, 15, 30, 0.6);
+      z-index: 5;
+    }
+
+    .y-axis-scroll {
+      position: absolute;
+      top: 36px;
+      bottom: 84px; /* leaves room for bottom controls align */
+      left: 0;
+      right: 0;
+    }
+
+    .y-tick {
+      position: absolute;
+      right: 0;
+      transform: translateY(50%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .y-tick-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .y-tick-label.major {
+      color: #e2e8f0;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .y-tick-line {
+      width: 8px;
+      height: 1px;
+      background: var(--axis-line);
+    }
+
+    .y-tick-line.major {
+      width: 14px;
+      background: #818cf8;
+      height: 1.5px;
+    }
+
+    /* Graph Canvas / Columns Scroll Area */
+    .graph-viewport {
+      flex: 1;
+      position: relative;
+      overflow-x: auto;
+      overflow-y: hidden;
+      display: flex;
+      scroll-behavior: smooth;
+    }
+
+    /* Custom Scrollbar for columns */
+    .graph-viewport::-webkit-scrollbar {
+      height: 6px;
+    }
+    .graph-viewport::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.2);
+    }
+    .graph-viewport::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+    }
+
+    /* Background Horizontal Grid Lines */
+    .grid-canvas {
+      position: absolute;
+      top: 36px;
+      bottom: 84px;
+      left: 0;
+      right: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .grid-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--axis-minor);
+      transform: translateY(50%);
+    }
+
+    .grid-line.major {
+      background: rgba(255, 255, 255, 0.08);
+      border-top: 1px dashed rgba(255, 255, 255, 0.12);
+    }
+
+    .grid-line.target-top {
+      background: rgba(234, 179, 8, 0.3);
+      border-top: 1px solid rgba(234, 179, 8, 0.6);
+      box-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
+    }
+
+    /* Students Track Container */
+    .students-container {
+      display: flex;
+      align-items: stretch;
+      padding: 0 20px;
+      min-width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Single Student Column */
+    .student-col {
+      flex: 0 0 130px;
+      max-width: 145px;
+      margin: 0 10px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Vertical Graph Bar Area */
+    .bar-track-area {
+      position: absolute;
+      top: 36px;
+      bottom: 84px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    /* Center Vertical Line (Stem/Pole) */
+    .vertical-stem-guide {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 2px;
+    }
+
+    /* The Active Line that rises and lowers */
+    .vertical-line-bar {
+      position: absolute;
+      bottom: 0;
+      width: 5px;
+      border-radius: 3px 3px 0 0;
+      background: linear-gradient(to top, var(--student-color-dim), var(--student-color));
+      box-shadow: 0 0 12px var(--student-color-glow);
+      transition: height 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Circle Avatar at the very top of the line */
+    .top-circle-badge {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ffffff, var(--student-color));
+      border: 3px solid #ffffff;
+      box-shadow: 0 6px 20px var(--student-color-glow), inset 0 2px 4px rgba(255,255,255,0.8);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+    }
+
+    .top-circle-badge:hover {
+      transform: translate(-50%, -50%) scale(1.08);
+      box-shadow: 0 10px 25px var(--student-color-glow);
+    }
+
+    .circle-name {
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 11px;
+      line-height: 1.1;
+      text-align: center;
+      max-width: 48px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-transform: capitalize;
+    }
+
+    .circle-avatar-icon {
+      font-size: 13px;
+      margin-bottom: 1px;
+    }
+
+    /* Floating Score Tag above the circle */
+    .score-tag-float {
+      position: absolute;
+      bottom: 100%;
+      margin-bottom: 6px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--student-color);
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 8px;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      pointer-events: none;
+      animation: floatPop 0.3s ease;
+    }
+
+    @keyframes floatPop {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Bottom Control Pod for Student */
+    .student-control-pod {
+      position: absolute;
+      bottom: 6px;
+      left: 0;
+      right: 0;
+      height: 72px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 5;
+    }
+
+    .pod-top-info {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2px;
+    }
+
+    .pod-name {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-main);
+      max-width: 65px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .pod-val-fraction {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--student-color);
+      background: rgba(0,0,0,0.3);
+      padding: 1px 5px;
+      border-radius: 5px;
+    }
+
+    /* Plus / Minus Stepper */
+    .stepper-buttons {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-btn {
+      flex: 1;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      color: #fff;
+      transition: all 0.15s;
+    }
+
+    .step-btn:active {
+      transform: scale(0.92);
+    }
+
+    .step-btn-minus {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+    .step-btn-minus:hover {
+      background: rgba(239, 68, 68, 0.35);
+      color: #fff;
+    }
+
+    .step-btn-plus {
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #86efac;
+    }
+    .step-btn-plus:hover {
+      background: rgba(34, 197, 94, 0.35);
+      color: #fff;
+    }
+
+    .pod-actions {
+      display: none; /* revealed on options modal or hover */
+    }
+
+    /* Empty state */
+    .empty-state {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--text-muted);
+      z-index: 2;
+    }
+
+    /* Modal for Add / Edit */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #131b2e;
+      border: 1px solid var(--surface-border);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 380px;
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      animation: modalSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalSlide {
+      from { transform: translateY(20px) scale(0.95); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .modal-card h3 {
+      font-size: 16px;
+      margin-bottom: 14px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: #6366f1;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .color-swatches {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .color-swatch {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.15s;
+    }
+    .color-swatch.active {
+      transform: scale(1.15);
+      border-color: #fff;
+      box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    /* Confetti Canvas */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fullscreen Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Mobile Landscape Reminder Modal -->
+  <div id="orientation-prompt">
+    <svg class="phone-rotate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+      <line x1="12" y1="18" x2="12.01" y2="18"></line>
+    </svg>
+    <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Please Rotate Your Phone</h2>
+    <p style="color: #94a3b8; font-size: 13px; max-width: 280px; margin-bottom: 20px; line-height: 1.5;">
+      This student progress graph is designed for <strong>Horizontal (Landscape) Mode</strong> to give you the best widescreen view.
+    </p>
+    <button class="btn btn-glass" onclick="document.getElementById('orientation-prompt').style.display = 'none';">
+      Continue in Portrait anyway
+    </button>
+  </div>
+
+  <!-- App Main Container -->
+  <div id="app-container">
+
+    <!-- Header Bar -->
+    <header>
+      <div class="brand">
+        <div class="brand-logo">📈</div>
+        <div>
+          <span class="brand-title">Student Progress</span>
+          <span class="brand-badge">Landscape</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <label style="font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
+          Target:
+          <select id="max-target-select" class="max-badge-select" onchange="changeMaxTarget(this.value)">
+            <option value="21" selected>1 to 21</option>
+            <option value="20">1 to 20</option>
+            <option value="15">1 to 15</option>
+            <option value="10">1 to 10</option>
+          </select>
+        </label>
+
+        <button class="btn btn-primary" onclick="openAddStudentModal()">
+          <span style="font-size: 15px; line-height: 1;">+</span> Add Student
+        </button>
+
+        <button class="btn btn-glass" title="Toggle Sound" id="sound-btn" onclick="toggleSound()">
+          🔔 Sound: On
+        </button>
+
+        <button class="btn btn-glass" title="Quick Demo" onclick="loadSampleData()">
+          ⚡ Demo
+        </button>
+
+        <button class="btn btn-glass" title="Fullscreen" onclick="toggleFullscreen()">
+          ⛶
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Graph Board -->
+    <div class="board-wrapper">
+
+      <!-- Left Y-Axis Scale with 1/4, 1/2, 3/4, 1 ... 21 -->
+      <div class="y-axis">
+        <div class="y-axis-scroll" id="y-axis-ticks">
+          <!-- Dynamically populated ticks -->
+        </div>
+      </div>
+
+      <!-- Graph Columns Viewport -->
+      <div class="graph-viewport" id="graph-viewport">
+        <!-- Background Grid Lines -->
+        <div class="grid-canvas" id="grid-lines-container"></div>
+
+        <!-- Student Vertical Lines & Pods -->
+        <div class="students-container" id="students-container">
+          <!-- Injected via JavaScript -->
+        </div>
+
+        <div id="empty-state" class="empty-state" style="display: none;">
+          <div style="font-size: 40px;">👨‍🎓</div>
+          <div style="font-weight: 700; font-size: 15px; color: #e2e8f0;">No students added yet</div>
+          <div style="font-size: 12px; color: #94a3b8;">Click "+ Add Student" or "⚡ Demo" to get started!</div>
+          <button class="btn btn-primary" onclick="loadSampleData()">Load Demo Students</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Student Add/Edit Modal -->
+  <div class="modal-overlay" id="student-modal">
+    <div class="modal-card">
+      <h3 id="modal-title"><span>👤</span> Add New Student</h3>
+      
+      <input type="hidden" id="student-edit-id" value="">
+
+      <div class="form-group">
+        <label for="student-name-input">Student Name</label>
+        <input type="text" id="student-name-input" class="form-input" placeholder="e.g. Alex, Maya, Leo..." maxlength="14" autocomplete="off">
+      </div>
+
+      <div class="form-group" id="student-score-group">
+        <label for="student-quarters-input">Set Current Progress Value</label>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="number" id="student-quarters-input" class="form-input" step="0.25" min="0" max="21" placeholder="e.g. 1.25, 2.5, 3...">
+          <span id="student-quarters-preview" style="font-family: var(--font-mono); font-size: 13px; color: #818cf8; white-space: nowrap; font-weight: 700;"></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Avatar Color</label>
+        <div class="color-swatches" id="color-swatches">
+          <!-- Injected -->
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-glass" id="delete-student-btn" style="color: #f87171; border-color: rgba(239, 68, 68, 0.3); margin-right: auto;" onclick="deleteCurrentStudent()">Delete</button>
+        <button class="btn btn-glass" onclick="closeStudentModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveStudent()">Save Student</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       AUDIO SYNTHESIZER (No external audio files needed - works 100% offline)
+       ========================================================================= */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let soundEnabled = true;
+
+    function playTone(freq, type = 'sine', duration = 0.12, gainLevel = 0.15) {
+      if (!soundEnabled) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(gainLevel, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // Audio might be blocked before first interaction
+      }
+    }
+
+    function playIncrementSound(quarters) {
+      // Ascending pitch based on progress
+      const baseFreq = 260 + (quarters * 7);
+      playTone(baseFreq, 'triangle', 0.15, 0.2);
+    }
+
+    function playDecrementSound() {
+      playTone(220, 'sine', 0.1, 0.15);
+    }
+
+    function playCelebrationSound() {
+      if (!soundEnabled) return;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((f, idx) => {
+        setTimeout(() => playTone(f, 'square', 0.2, 0.15), idx * 100);
+      });
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('sound-btn');
+      btn.textContent = soundEnabled ? '🔔 Sound: On' : '🔕 Sound: Off';
+    }
+
+    /* =========================================================================
+       FRACTION & SCALING LOGIC
+       1 step = 1/4 (0.25).
+       Progression: 1/4, 1/2, 3/4, 1, 1 1/4, 1 1/2, 1 3/4, 2 ... up to max (e.g. 21)
+       ========================================================================= */
+    let maxDigits = 21; // 1 to 21 digits
+    let totalQuarterSteps = maxDigits * 4; // 84 quarters
+
+    function formatFraction(quarters) {
+      if (quarters === 0) return "0";
+      const whole = Math.floor(quarters / 4);
+      const rem = quarters % 4;
+
+      let fracStr = "";
+      if (rem === 1) fracStr = "¼"; // 1/4
+      else if (rem === 2) fracStr = "½"; // 1/2
+      else if (rem === 3) fracStr = "¾"; // 3/4
+
+      if (whole === 0) return fracStr;
+      if (rem === 0) return `${whole}`;
+      return `${whole} ${fracStr}`;
+    }
+
+    function formatFractionVerbose(quarters) {
+      if (quarters === 0) return "0";
+      const whole = Math.floor(quarters / 4);
+      const rem = quarters % 4;
+
+      let frac = "";
+      if (rem === 1) frac = "1/4";
+      else if (rem === 2) frac = "1/2";
+      else if (rem === 3) frac = "3/4";
+
+      if (whole === 0) return frac;
+      if (rem === 0) return `${whole}`;
+      return `${whole} ${frac}`;
+    }
+
+    /* =========================================================================
+       COLOR PALETTES
+       ========================================================================= */
+    const PALETTE = [
+      { color: '#38bdf8', dim: '#0284c7', glow: 'rgba(56, 189, 248, 0.45)', avatar: '🚀' },
+      { color: '#ec4899', dim: '#be185d', glow: 'rgba(236, 72, 153, 0.45)', avatar: '⭐' },
+      { color: '#10b981', dim: '#047857', glow: 'rgba(16, 185, 129, 0.45)', avatar: '🍀' },
+      { color: '#f59e0b', dim: '#b45309', glow: 'rgba(245, 158, 11, 0.45)', avatar: '🦁' },
+      { color: '#8b5cf6', dim: '#6d28d9', glow: 'rgba(139, 92, 246, 0.45)', avatar: '🦄' },
+      { color: '#06b6d4', dim: '#0e7490', glow: 'rgba(6, 182, 212, 0.45)', avatar: '🐬' },
+      { color: '#f43f5e', dim: '#be123c', glow: 'rgba(244, 63, 94, 0.45)', avatar: '🎯' },
+      { color: '#84cc16', dim: '#4d7c0f', glow: 'rgba(132, 204, 22, 0.45)', avatar: '🥑' }
+    ];
+
+    let selectedColorIndex = 0;
+
+    /* =========================================================================
+       DATA STORE
+       ========================================================================= */
+    const STORAGE_KEY = 'student_progress_data_v1';
+    let students = [];
+
+    function saveToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          maxDigits,
+          students
+        }));
+      } catch (e) {
+        console.error('Storage error', e);
+      }
+    }
+
+    function loadFromStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.maxDigits) {
+            maxDigits = parseInt(parsed.maxDigits) || 21;
+            document.getElementById('max-target-select').value = maxDigits;
+            totalQuarterSteps = maxDigits * 4;
+          }
+          if (Array.isArray(parsed.students) && parsed.students.length > 0) {
+            students = parsed.students;
+            return;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      // Default initial mock students
+      students = [
+        { id: '1', name: 'Emma', quarters: 7, colorIndex: 0 },    // 1 3/4
+        { id: '2', name: 'Liam', quarters: 16, colorIndex: 1 },   // 4
+        { id: '3', name: 'Noah', quarters: 3, colorIndex: 2 },    // 3/4
+        { id: '4', name: 'Olivia', quarters: 25, colorIndex: 3 }, // 6 1/4
+        { id: '5', name: 'Sophia', quarters: 10, colorIndex: 4 }  // 2 1/2
+      ];
+    }
+
+    /* =========================================================================
+       RENDERING Y-AXIS & GRID
+       ========================================================================= */
+    function renderYAxis() {
+      const axisContainer = document.getElementById('y-axis-ticks');
+      const gridContainer = document.getElementById('grid-lines-container');
+      axisContainer.innerHTML = '';
+      gridContainer.innerHTML = '';
+
+      totalQuarterSteps = maxDigits * 4;
+
+      // Determine step frequency so labels are clean without overcrowding
+      // If maxDigits <= 10, show every 1/2 or 1
+      // If maxDigits > 10, show every whole number and marks for quarters
+      for (let q = 0; q <= totalQuarterSteps; q++) {
+        const isWhole = (q % 4 === 0);
+        const isHalf = (q % 2 === 0);
+        const percent = (q / totalQuarterSteps) * 100;
+
+        // Create horizontal grid lines for whole numbers and halves
+        if (isWhole || (maxDigits <= 10 && isHalf)) {
+          const gridLine = document.createElement('div');
+          gridLine.className = 'grid-line' + (isWhole ? ' major' : '') + (q === totalQuarterSteps ? ' target-top' : '');
+          gridLine.style.bottom = `${percent}%`;
+          gridContainer.appendChild(gridLine);
+        }
+
+        // Ticks on left axis:
+        // Always show whole numbers. For smaller scales show 1/2 and 1/4.
+        const shouldShowLabel = isWhole || (maxDigits <= 8 && isHalf) || (maxDigits <= 4);
+        const shouldShowTick = isWhole || isHalf || (maxDigits <= 15);
+
+        if (shouldShowTick) {
+          const tick = document.createElement('div');
+          tick.className = 'y-tick';
+          tick.style.bottom = `${percent}%`;
+
+          let labelHtml = '';
+          if (shouldShowLabel) {
+            const fracText = formatFraction(q);
+            labelHtml = `<span class="y-tick-label ${isWhole ? 'major' : ''}">${fracText}</span>`;
+          }
+
+          tick.innerHTML = `
+            ${labelHtml}
+            <div class="y-tick-line ${isWhole ? 'major' : ''}"></div>
+          `;
+          axisContainer.appendChild(tick);
+        }
+      }
+    }
+
+    /* =========================================================================
+       RENDER STUDENTS
+       ========================================================================= */
+    function renderStudents() {
+      const container = document.getElementById('students-container');
+      const emptyState = document.getElementById('empty-state');
+      
+      container.innerHTML = '';
+
+      if (students.length === 0) {
+        emptyState.style.display = 'flex';
+        return;
+      }
+      emptyState.style.display = 'none';
+
+      students.forEach((student, index) => {
+        const palette = PALETTE[student.colorIndex % PALETTE.length];
+        const fractionFormatted = formatFraction(student.quarters);
+        const fractionVerbose = formatFractionVerbose(student.quarters);
+        const progressRatio = Math.min(1, Math.max(0, student.quarters / totalQuarterSteps));
+        const heightPercent = progressRatio * 100;
+
+        const col = document.createElement('div');
+        col.className = 'student-col';
+        col.style.setProperty('--student-color', palette.color);
+        col.style.setProperty('--student-color-dim', palette.dim);
+        col.style.setProperty('--student-color-glow', palette.glow);
+
+        col.innerHTML = `
+          <!-- Bar Track Area -->
+          <div class="bar-track-area">
+            <!-- Background stem guide -->
+            <div class="vertical-stem-guide"></div>
+
+            <!-- Rising Vertical Line Bar -->
+            <div class="vertical-line-bar" style="height: ${heightPercent}%;">
+              
+              <!-- Floating Top Circle with Student Name -->
+              <div class="top-circle-badge" onclick="editStudent('${student.id}')" title="Click to edit ${student.name}">
+                <div class="score-tag-float">${fractionFormatted}</div>
+                <div class="circle-avatar-icon">${palette.avatar}</div>
+                <div class="circle-name">${student.name}</div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Bottom Control Pod -->
+          <div class="student-control-pod">
+            <div class="pod-top-info">
+              <span class="pod-name" title="${student.name}">${student.name}</span>
+              <span class="pod-val-fraction" title="${fractionVerbose}">${fractionFormatted}</span>
+            </div>
+
+            <!-- + / - Buttons for quarter adjustments -->
+            <div class="stepper-buttons">
+              <button class="step-btn step-btn-minus" 
+                onpointerdown="startHoldAdjust('${student.id}', -1, event)" 
+                onpointerup="stopHoldAdjust(event)" 
+                onpointerleave="stopHoldAdjust(event)" 
+                onpointercancel="stopHoldAdjust(event)" 
+                title="Decrease (-¼)">
+                −
+              </button>
+              <button class="step-btn step-btn-plus" 
+                onpointerdown="startHoldAdjust('${student.id}', 1, event)" 
+                onpointerup="stopHoldAdjust(event)" 
+                onpointerleave="stopHoldAdjust(event)" 
+                onpointercancel="stopHoldAdjust(event)" 
+                title="Increase (+¼)">
+                +
+              </button>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(col);
+      });
+    }
+
+    /* =========================================================================
+       ACTIONS & STEPPER
+       ========================================================================= */
+    function adjustProgress(id, deltaQuarter) {
+      const student = students.find(s => s.id === id);
+      if (!student) return;
+
+      const prev = student.quarters;
+      const next = Math.max(0, Math.min(totalQuarterSteps, student.quarters + deltaQuarter));
+
+      if (prev === next) return; // reached bound
+
+      student.quarters = next;
+      saveToStorage();
+
+      if (deltaQuarter > 0) {
+        playIncrementSound(student.quarters);
+        if (student.quarters === totalQuarterSteps) {
+          triggerConfetti();
+          playCelebrationSound();
+        }
+      } else {
+        playDecrementSound();
+      }
+
+      renderStudents();
+    }
+
+    function changeMaxTarget(newMax) {
+      maxDigits = parseInt(newMax) || 21;
+      totalQuarterSteps = maxDigits * 4;
+      renderYAxis();
+      renderStudents();
+      saveToStorage();
+    }
+
+    function loadSampleData() {
+      students = [
+        { id: '1', name: 'Sophia', quarters: 84, colorIndex: 0 },  // 21 (Goal reached!)
+        { id: '2', name: 'Alexander', quarters: 65, colorIndex: 1 },// 16 1/4
+        { id: '3', name: 'Liam', quarters: 42, colorIndex: 2 },    // 10 1/2
+        { id: '4', name: 'Mia', quarters: 29, colorIndex: 3 },     // 7 1/4
+        { id: '5', name: 'Noah', quarters: 15, colorIndex: 4 },    // 3 3/4
+        { id: '6', name: 'Emma', quarters: 7, colorIndex: 5 },     // 1 3/4
+        { id: '7', name: 'Lucas', quarters: 2, colorIndex: 6 }     // 1/2
+      ];
+      saveToStorage();
+      renderStudents();
+      triggerConfetti();
+      playCelebrationSound();
+    }
+
+    /* =========================================================================
+       MODAL HANDLING (ADD / EDIT / DELETE)
+       ========================================================================= */
+    function buildColorSwatches() {
+      const container = document.getElementById('color-swatches');
+      container.innerHTML = '';
+      PALETTE.forEach((p, idx) => {
+        const swatch = document.createElement('div');
+        swatch.className = 'color-swatch' + (idx === selectedColorIndex ? ' active' : '');
+        swatch.style.background = `linear-gradient(135deg, ${p.color}, ${p.dim})`;
+        swatch.onclick = () => {
+          document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+          swatch.classList.add('active');
+          selectedColorIndex = idx;
+        };
+        container.appendChild(swatch);
+      });
+    }
+
+    let holdTimer = null;
+    let holdInterval = null;
+
+    function startHoldAdjust(id, deltaQuarter, event) {
+      if (event && event.button !== undefined && event.button !== 0) return; // Only primary mouse button
+      if (event) {
+        event.preventDefault();
+      }
+      stopHoldAdjust();
+      adjustProgress(id, deltaQuarter);
+      holdTimer = setTimeout(() => {
+        holdInterval = setInterval(() => {
+          adjustProgress(id, deltaQuarter);
+        }, 110);
+      }, 350);
+    }
+
+    function stopHoldAdjust(event) {
+      if (holdTimer) clearTimeout(holdTimer);
+      if (holdInterval) clearInterval(holdInterval);
+      holdTimer = null;
+      holdInterval = null;
+    }
+
+    function openAddStudentModal() {
+      document.getElementById('modal-title').innerHTML = `<span>👤</span> Add New Student`;
+      document.getElementById('student-edit-id').value = '';
+      document.getElementById('student-name-input').value = '';
+      document.getElementById('student-quarters-input').value = '0.25';
+      document.getElementById('student-quarters-preview').textContent = '= ¼';
+      document.getElementById('delete-student-btn').style.display = 'none';
+      selectedColorIndex = students.length % PALETTE.length;
+      buildColorSwatches();
+      document.getElementById('student-modal').classList.add('active');
+      setTimeout(() => document.getElementById('student-name-input').focus(), 100);
+    }
+
+    function editStudent(id) {
+      const student = students.find(s => s.id === id);
+      if (!student) return;
+
+      document.getElementById('modal-title').innerHTML = `<span>✏️</span> Edit Student`;
+      document.getElementById('student-edit-id').value = student.id;
+      document.getElementById('student-name-input').value = student.name;
+      const decVal = (student.quarters / 4);
+      document.getElementById('student-quarters-input').value = decVal;
+      document.getElementById('student-quarters-preview').textContent = `= ${formatFraction(student.quarters)}`;
+      document.getElementById('delete-student-btn').style.display = 'inline-flex';
+      selectedColorIndex = student.colorIndex % PALETTE.length;
+      buildColorSwatches();
+      document.getElementById('student-modal').classList.add('active');
+    }
+
+    // Dynamic preview when changing number input in modal
+    document.addEventListener('DOMContentLoaded', () => {
+      const qInput = document.getElementById('student-quarters-input');
+      if (qInput) {
+        qInput.addEventListener('input', (e) => {
+          const val = parseFloat(e.target.value) || 0;
+          const q = Math.round(val * 4);
+          document.getElementById('student-quarters-preview').textContent = `= ${formatFraction(q)}`;
+        });
+      }
+    });
+
+    function deleteCurrentStudent() {
+      const id = document.getElementById('student-edit-id').value;
+      if (!id) return;
+      if (confirm('Are you sure you want to remove this student?')) {
+        students = students.filter(s => s.id !== id);
+        saveToStorage();
+        renderStudents();
+        closeStudentModal();
+      }
+    }
+
+    function closeStudentModal() {
+      document.getElementById('student-modal').classList.remove('active');
+    }
+
+    function saveStudent() {
+      const id = document.getElementById('student-edit-id').value;
+      const name = document.getElementById('student-name-input').value.trim();
+      const valInput = parseFloat(document.getElementById('student-quarters-input').value);
+      const targetQuarters = isNaN(valInput) ? 1 : Math.max(0, Math.min(totalQuarterSteps, Math.round(valInput * 4)));
+
+      if (!name) {
+        alert('Please enter a student name!');
+        return;
+      }
+
+      if (id) {
+        // Edit existing
+        const student = students.find(s => s.id === id);
+        if (student) {
+          student.name = name;
+          student.quarters = targetQuarters;
+          student.colorIndex = selectedColorIndex;
+        }
+      } else {
+        // New student
+        students.push({
+          id: Date.now().toString(),
+          name: name,
+          quarters: targetQuarters,
+          colorIndex: selectedColorIndex
+        });
+        playIncrementSound(targetQuarters);
+      }
+
+      saveToStorage();
+      renderStudents();
+      closeStudentModal();
+
+      // Scroll to the end if new student
+      if (!id) {
+        setTimeout(() => {
+          const vp = document.getElementById('graph-viewport');
+          vp.scrollLeft = vp.scrollWidth;
+        }, 100);
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    /* =========================================================================
+       CELEBRATION CONFETTI ENGINE (Zero library dependency)
+       ========================================================================= */
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    let confettiParticles = [];
+    let confettiAnimationId = null;
+
+    function resizeConfetti() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeConfetti);
+    resizeConfetti();
+
+    function triggerConfetti() {
+      const colors = ['#38bdf8', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6', '#ffffff'];
+      for (let i = 0; i < 90; i++) {
+        confettiParticles.push({
+          x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+          y: canvas.height * 0.4,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 1) * 12 - 2,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 10,
+          opacity: 1
+        });
+      }
+
+      if (!confettiAnimationId) {
+        animateConfetti();
+      }
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = confettiParticles.length - 1; i >= 0; i--) {
+        const p = confettiParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35; // gravity
+        p.rotation += p.vRot;
+        p.opacity -= 0.009;
+
+        if (p.opacity <= 0 || p.y > canvas.height) {
+          confettiParticles.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
+        ctx.restore();
+      }
+
+      if (confettiParticles.length > 0) {
+        confettiAnimationId = requestAnimationFrame(animateConfetti);
+      } else {
+        confettiAnimationId = null;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    /* =========================================================================
+       INITIALIZATION
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      loadFromStorage();
+      renderYAxis();
+      renderStudents();
+      buildColorSwatches();
+    });
+  </script>
+</body>
+</html>
