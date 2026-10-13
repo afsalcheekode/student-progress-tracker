@@ -424,8 +424,21 @@
       text-transform: capitalize;
     }
 
+    .circle-score-pill {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      color: #0f172a;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-top: 2px;
+      line-height: 1.1;
+      letter-spacing: -0.2px;
+    }
+
     .circle-avatar-icon {
-      font-size: 13px;
+      font-size: 12px;
       margin-bottom: 1px;
     }
 
@@ -862,9 +875,9 @@
       const rem = quarters % 4;
 
       let fracStr = "";
-      if (rem === 1) fracStr = "¼"; // 1/4
-      else if (rem === 2) fracStr = "½"; // 1/2
-      else if (rem === 3) fracStr = "¾"; // 3/4
+      if (rem === 1) fracStr = "1/4";
+      else if (rem === 2) fracStr = "1/2";
+      else if (rem === 3) fracStr = "3/4";
 
       if (whole === 0) return fracStr;
       if (rem === 0) return `${whole}`;
@@ -872,18 +885,7 @@
     }
 
     function formatFractionVerbose(quarters) {
-      if (quarters === 0) return "0";
-      const whole = Math.floor(quarters / 4);
-      const rem = quarters % 4;
-
-      let frac = "";
-      if (rem === 1) frac = "1/4";
-      else if (rem === 2) frac = "1/2";
-      else if (rem === 3) frac = "3/4";
-
-      if (whole === 0) return frac;
-      if (rem === 0) return `${whole}`;
-      return `${whole} ${frac}`;
+      return formatFraction(quarters);
     }
 
     /* =========================================================================
@@ -905,7 +907,7 @@
     /* =========================================================================
        DATA STORE
        ========================================================================= */
-    const STORAGE_KEY = 'student_progress_data_v1';
+    const STORAGE_KEY = 'student_progress_data_v2';
     let students = [];
 
     function saveToStorage() {
@@ -937,13 +939,16 @@
       } catch (e) {
         console.error(e);
       }
-      // Default initial mock students
+      // Initial students showing requested sequence: 1/4, 1/2, 3/4, 1, 1 1/4, 1 1/2, 1 3/4, 2
       students = [
-        { id: '1', name: 'Emma', quarters: 7, colorIndex: 0 },    // 1 3/4
-        { id: '2', name: 'Liam', quarters: 16, colorIndex: 1 },   // 4
+        { id: '1', name: 'Ava', quarters: 1, colorIndex: 0 },     // 1/4
+        { id: '2', name: 'Leo', quarters: 2, colorIndex: 1 },     // 1/2
         { id: '3', name: 'Noah', quarters: 3, colorIndex: 2 },    // 3/4
-        { id: '4', name: 'Olivia', quarters: 25, colorIndex: 3 }, // 6 1/4
-        { id: '5', name: 'Sophia', quarters: 10, colorIndex: 4 }  // 2 1/2
+        { id: '4', name: 'Emma', quarters: 4, colorIndex: 3 },    // 1
+        { id: '5', name: 'Liam', quarters: 5, colorIndex: 4 },    // 1 1/4
+        { id: '6', name: 'Olivia', quarters: 6, colorIndex: 5 },  // 1 1/2
+        { id: '7', name: 'Lucas', quarters: 7, colorIndex: 6 },   // 1 3/4
+        { id: '8', name: 'Sophia', quarters: 8, colorIndex: 7 }   // 2
       ];
     }
 
@@ -1039,8 +1044,8 @@
               <!-- Floating Top Circle with Student Name -->
               <div class="top-circle-badge" onclick="editStudent('${student.id}')" title="Click to edit ${student.name}">
                 <div class="score-tag-float">${fractionFormatted}</div>
-                <div class="circle-avatar-icon">${palette.avatar}</div>
                 <div class="circle-name">${student.name}</div>
+                <div class="circle-score-pill">${fractionFormatted}</div>
               </div>
 
             </div>
@@ -1060,7 +1065,7 @@
                 onpointerup="stopHoldAdjust(event)" 
                 onpointerleave="stopHoldAdjust(event)" 
                 onpointercancel="stopHoldAdjust(event)" 
-                title="Decrease (-¼)">
+                title="Decrease (-1/4)">
                 −
               </button>
               <button class="step-btn step-btn-plus" 
@@ -1068,7 +1073,7 @@
                 onpointerup="stopHoldAdjust(event)" 
                 onpointerleave="stopHoldAdjust(event)" 
                 onpointercancel="stopHoldAdjust(event)" 
-                title="Increase (+¼)">
+                title="Increase (+1/4)">
                 +
               </button>
             </div>
@@ -1117,13 +1122,15 @@
 
     function loadSampleData() {
       students = [
-        { id: '1', name: 'Sophia', quarters: 84, colorIndex: 0 },  // 21 (Goal reached!)
-        { id: '2', name: 'Alexander', quarters: 65, colorIndex: 1 },// 16 1/4
-        { id: '3', name: 'Liam', quarters: 42, colorIndex: 2 },    // 10 1/2
-        { id: '4', name: 'Mia', quarters: 29, colorIndex: 3 },     // 7 1/4
-        { id: '5', name: 'Noah', quarters: 15, colorIndex: 4 },    // 3 3/4
-        { id: '6', name: 'Emma', quarters: 7, colorIndex: 5 },     // 1 3/4
-        { id: '7', name: 'Lucas', quarters: 2, colorIndex: 6 }     // 1/2
+        { id: '1', name: 'Ava', quarters: 1, colorIndex: 0 },     // 1/4
+        { id: '2', name: 'Leo', quarters: 2, colorIndex: 1 },     // 1/2
+        { id: '3', name: 'Noah', quarters: 3, colorIndex: 2 },    // 3/4
+        { id: '4', name: 'Emma', quarters: 4, colorIndex: 3 },    // 1
+        { id: '5', name: 'Liam', quarters: 5, colorIndex: 4 },    // 1 1/4
+        { id: '6', name: 'Olivia', quarters: 6, colorIndex: 5 },  // 1 1/2
+        { id: '7', name: 'Lucas', quarters: 7, colorIndex: 6 },   // 1 3/4
+        { id: '8', name: 'Sophia', quarters: 8, colorIndex: 7 },  // 2
+        { id: '9', name: 'Maya', quarters: 84, colorIndex: 2 }    // 21 (Goal reached!)
       ];
       saveToStorage();
       renderStudents();
@@ -1178,8 +1185,8 @@
       document.getElementById('modal-title').innerHTML = `<span>👤</span> Add New Student`;
       document.getElementById('student-edit-id').value = '';
       document.getElementById('student-name-input').value = '';
-      document.getElementById('student-quarters-input').value = '0.25';
-      document.getElementById('student-quarters-preview').textContent = '= ¼';
+      document.getElementById('student-quarters-input').value = '0';
+      document.getElementById('student-quarters-preview').textContent = '= 0';
       document.getElementById('delete-student-btn').style.display = 'none';
       selectedColorIndex = students.length % PALETTE.length;
       buildColorSwatches();
